@@ -10,30 +10,14 @@ let calculator = function(a,b)
     return eval(a+symbol+b);
 };
 
-// let oneField = document.querySelector('#a');
-// let twoField= document.querySelector('#b');
-// let threeField = document.querySelector('#c');
-// let sym = document.querySelector('.symbol');
-
-// oneField.addEventListener('change',(e)=>{
-//     threeField.value=sum(Number(oneField.value))(Number(twoField.value));
-// });
-// twoField.addEventListener('change',(e)=>{
-//     threeField.value=sum(Number(oneField.value))(Number(twoField.value));
-// }); 
-
-// calc.addEventListener('click', (e)=>{
-//     let temp=e.target;
-//     oneField.value = oneField.value+temp.value;
-//     console.log(temp.value);
-// });
-
-
 let answer = document.querySelector('#field');
 let bd = document.querySelector('.calc');
 let symbol = '?';
 let temp = '0' ;
 let afterCalulation = false;
+let afterSymbol = false;
+let bodmassValue = '0';
+let bodmassSymbol = '?';
 
 bd.addEventListener('click',(e)=>{
 
@@ -44,7 +28,7 @@ bd.addEventListener('click',(e)=>{
     */
     if(event.className=='num digit')
     {   
-        if(answer.value=='0'){
+        if(answer.value=='0' || afterSymbol){
             answer.value=event.value;
         }
         else if(answer.value!='0' && afterCalulation && symbol=='?'){
@@ -54,6 +38,7 @@ bd.addEventListener('click',(e)=>{
         else if(!answer.value.includes('.') || event.value!='.'){
             answer.value=answer.value+event.value;
         }
+        afterSymbol = false;
     }
 
     /*
@@ -89,15 +74,39 @@ bd.addEventListener('click',(e)=>{
     */
     else if(event.className=='num symbol' && event.id!='equal')
     {   
-        if(symbol!='?'){
+        if(symbol == '?' && answer.value == '0'){
+            answer.value = '0';
+        }
+        else if(bodmassSymbol != '?' && (event.id=='plus' || event.id=='minus')){
+            temp = eval(bodmassValue + bodmassSymbol + calculator(Number(temp),Number(answer.value)));
+            answer.value = temp;
+            symbol = event.value;
+            bodmassValue = '0';
+            bodmassSymbol = '?';
+        }
+        // else if(bodmassSymbol != '?' && (event.id=='div' || event.id=='mul')){
+        //     temp = calculator(Number(temp),Number(answer.value));
+        //     answer.value = '0';
+        //     symbol = event.value;
+        // }
+        else if((symbol=='+' || symbol=='-') && (event.id=='mul' || event.id=='div')){
+            bodmassValue = temp;
+            bodmassSymbol = symbol;
+            temp = answer.value;
+            symbol = event.value;
+            // answer.value = '0';
+        }
+        else if(symbol!='?' || (bodmassSymbol != '?' && (event.id=='div' || event.id=='mul'))){
             temp = calculator(Number(temp),Number(answer.value));
+            answer.value = temp;
             symbol = event.value;
         }
         else{
             temp =  answer.value;
-            answer.value = '0';
+            // answer.value = '0';
             symbol = event.value;
         }
+        afterSymbol = true;
     }
 
     /*
@@ -105,30 +114,19 @@ bd.addEventListener('click',(e)=>{
     */
     else if(event.id=='equal')
     {
-        answer.value=calculator(Number(temp),Number(answer.value));
-        symbol='?';
-        afterCalulation = true;
+        if(bodmassSymbol != '?' ){
+            answer.value = eval(bodmassValue + bodmassSymbol + calculator(Number(temp),Number(answer.value)));
+            symbol='?';
+            afterCalulation = true;
+            bodmassValue = '0';
+            bodmassSymbol = '?';
+        }
+        else{
+            answer.value=calculator(Number(temp),Number(answer.value));
+            symbol='?';
+            afterCalulation = true;
+        }
     }
-
-
-    // else if(e.target.id=='clear')
-    // {
-    //     oneField.value="";
-    //     twoField.value="";
-    //     threeField.value="";
-    //     sym.inneranswer.value="?";
-    // }
-    // else if(document.querySelector(".symbol").inneranswer.value == '?')
-    // {
-    //         let temp=e.target;
-    //         oneField.value = oneField.value+temp.value;
-    // }
-    // else
-    // {
-    //         let temp=e.target;
-    //         twoField.value = twoField.value+temp.value;
-    // }
-
 });
 
 
