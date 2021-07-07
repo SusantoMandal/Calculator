@@ -24,21 +24,28 @@ bd.addEventListener('click',(e)=>{
     let event = e.target;
 
     /*
-    * event to input the values from 0-9[.]
+    * eventHandler to input the values from 0-9[.]
     */
     if(event.className=='num digit')
     {   
-        if(answer.value=='0' || afterSymbol){
+        /* 1st condition: if input field is empty or   
+         * 2nd condition: if any symbol was pressed before
+         * 3rd condition: if equal was pressed
+         * change input field  to the digit was pressed
+         */
+        if(answer.value=='0' || afterSymbol || afterCalulation){
             answer.value=event.value;
         }
-        else if(answer.value!='0' && afterCalulation && symbol=='?'){
-            answer.value=event.value;
-            afterCalulation = false;
-        }
+        
+        /* 1st condition: if input doesn't contain '.' pr 
+         * 2nd condition: if '.' button is not pressed
+         * update input field to pressed button
+         */
         else if(!answer.value.includes('.') || event.value!='.'){
             answer.value=answer.value+event.value;
         }
         afterSymbol = false;
+        afterCalulation = false;
     }
 
     /*
@@ -74,9 +81,14 @@ bd.addEventListener('click',(e)=>{
     */
     else if(event.className=='num symbol' && event.id!='equal')
     {   
+        /* if no input then symbol won't effect it 
+        */
         if(symbol == '?' && answer.value == '0'){
             answer.value = '0';
         }
+
+        /* Apply BODMASS 
+        */
         else if(bodmassSymbol != '?' && (event.id=='plus' || event.id=='minus')){
             temp = eval(bodmassValue + bodmassSymbol + calculator(Number(temp),Number(answer.value)));
             answer.value = temp;
@@ -89,6 +101,8 @@ bd.addEventListener('click',(e)=>{
         //     answer.value = '0';
         //     symbol = event.value;
         // }
+        
+        
         else if((symbol=='+' || symbol=='-') && (event.id=='mul' || event.id=='div')){
             bodmassValue = temp;
             bodmassSymbol = symbol;
@@ -96,11 +110,15 @@ bd.addEventListener('click',(e)=>{
             symbol = event.value;
             // answer.value = '0';
         }
+        
+        
         else if(symbol!='?' || (bodmassSymbol != '?' && (event.id=='div' || event.id=='mul'))){
             temp = calculator(Number(temp),Number(answer.value));
             answer.value = temp;
             symbol = event.value;
         }
+        
+        
         else{
             temp =  answer.value;
             // answer.value = '0';
@@ -114,6 +132,8 @@ bd.addEventListener('click',(e)=>{
     */
     else if(event.id=='equal')
     {
+        /* Apply BODMASS 
+        */
         if(bodmassSymbol != '?' ){
             answer.value = eval(bodmassValue + bodmassSymbol + calculator(Number(temp),Number(answer.value)));
             symbol='?';
